@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nour Academy | Nos cours</title>
+</head>
+<body class="min-h-screen bg-bg text-text">
+
+  <!-- Header -->
+  <header class="mx-auto mt-4 flex max-w-[1380px] items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-6 py-4 lg:justify-center">
+    <div class="flex items-center gap-2">
+      <a href="index.html"><img src="src/assets/logo.png" alt="the Academy logo" class="h-15"></a>
+      <p class="font-bold text-2xl -ml-2 text-primary">Nour <br>academy</p>
+    </div>
+
+    <button id="cartToggle" type="button" aria-label="Ouvrir le panier" class="flex w-12 shrink-0 items-center justify-center lg:hidden">
+      <img src="src/assets/Minimal Black Shopping Cart Icon.png" alt="Panier" class="h-8 w-8">
+    </button>
+  </header>
+
+  <main id="catalogue" class="mx-auto w-full max-w-[1380px] px-5 py-10">
+
+    <section class="mb-5 flex flex-col justify-between text-center gap-5 md:flex-col md:items-center">
+      <div>
+        <h1 class="text-4xl font-extrabold md:text-5xl text-primary">
+          Nos cours
+        </h1>
+
+        <p class="mt-2 text-lg text-text-secondary">
+          Trouvez le cours qui convient à votre enfant.
+        </p>
+      </div>
+
+      <label class="flex min-h-14 w-full items-center gap-3 rounded-xl border border-border bg-surface px-4 md:max-w-[530px]">
+        <span aria-hidden="true" class="text-xl">⌕</span>
+
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Rechercher un cours..."
+          aria-label="Rechercher un cours"
+          class="min-w-0 flex-1 bg-transparent outline-none"
+        >
+      </label>
+    </section>
+
+    <!-- Filtres -->
+    <section aria-label="Filtres des cours" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+      <label class="flex min-h-13 items-center gap-3 rounded-xl border border-border bg-surface px-4">
+        <span aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            width="22" height="22" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="m2 10 10-5 10 5-10 5-10-5Z"/>
+            <path d="M6 12v5c3.5 3 8.5 3 12 0v-5"/>
+            <path d="M22 10v6"/>
+          </svg>
+        </span>
+
+        <select id="levelFilter" class="w-full bg-transparent py-3 outline-none">
+          <option value="">Tous les niveaux</option>
+          <option value="Primaire">Primaire</option>
+          <option value="Collège">Collège</option>
+          <option value="Lycée">Lycée</option>
+          <option value="1re Bac">1re Bac</option>
+          <option value="2e Bac">2e Bac</option>
+        </select>
+      </label>
+
+      <label class="flex min-h-13 items-center gap-3 rounded-xl border border-border bg-surface px-4">
+        <span aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            width="22" height="22" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 7v14"/>
+            <path d="M3 18V5a2 2 0 0 1 2-2h3a4 4 0 0 1 4 4 4 4 0 0 1 4-4h3a2 2 0 0 1 2 2v13"/>
+            <path d="M3 18a2 2 0 0 1 2-2h3a4 4 0 0 1 4 4 4 4 0 0 1 4-4h3a2 2 0 0 1 2 2"/>
+          </svg>
+        </span>
+
+        <select id="subjectFilter" class="w-full bg-transparent py-3 outline-none">
+          <option value="">Toutes les matières</option>
+          <option value="Mathématiques">Mathématiques</option>
+          <option value="Physique-Chimie">Physique-Chimie</option>
+          <option value="Anglais">Anglais</option>
+          <option value="Français">Français</option>
+          <option value="Arabe">Arabe</option>
+          <option value="Espagnol">Espagnol</option>
+          <option value="Informatique">Informatique</option>
+          <option value="Préparation examens">Préparation examens</option>
+          <option value="SVT">SVT</option>
+          <option value="Comptabilité">Comptabilité</option>
+          <option value="Renforcement scolaire">Renforcement scolaire</option>
+        </select>
+      </label>
+    </section>
+
+    <p id="resultCount" aria-live="polite" class="mb-4 pl-1 text-text-secondary">
+      0 cours trouvés
+    </p>
+
+    <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+
+      <div class="lg:col-span-2">
+        <div id="courseGrid" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <!-- JavaScript generates course cards here -->
+        </div>
+      </div>
+
+      <!-- ADDED: Overlay behind the cart on phones and tablets -->
+      <div
+        id="cartOverlay"
+        class="fixed inset-0 z-40 hidden bg-black/50 lg:hidden"
+        aria-hidden="true"
+      ></div>
+
+      <!-- CHANGED: Cart slides in on small screens and stays in the sidebar on desktop -->
+      <aside id="cart" class="fixed inset-y-0 right-0 z-50 w-[90%] max-w-sm translate-x-full overflow-y-auto border-l border-border bg-surface p-5 transition-transform duration-300 lg:static lg:z-auto lg:w-auto lg:max-w-none lg:translate-x-0 lg:overflow-visible lg:rounded-2xl lg:border lg:p-5">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-xl font-bold">Mon panier</h2>
+
+          <!-- ADDED: Close button on phones and tablets -->
+          <button id="cartClose" type="button" aria-label="Fermer le panier" class="min-h-11 min-w-11 rounded-lg text-2xl hover:bg-gray-100 lg:hidden">
+            &times;
+          </button>
+        </div>
+
+        <div id="cartItems" class="my-4">
+          <p class="text-text-secondary">Votre panier est vide.</p>
+        </div>
+
+        <p class="border-t border-border pt-4 font-bold text-primary">
+          Total : <span id="cartTotal">0 MAD</span>
+        </p>
+
+        <button id="checkoutButton" disabled
+          class="mt-4 min-h-11 w-full rounded-xl bg-primary px-4 text-white disabled:opacity-50">
+          Continuer l'inscription
+        </button>
+      </aside>
+
+    </section>
+  </main>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>

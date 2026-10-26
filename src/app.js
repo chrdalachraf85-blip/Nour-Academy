@@ -358,7 +358,7 @@ checkoutButton.addEventListener("click", () => {
 </div>
     <div class="flex fixed inset-2 sm:inset-4 md:inset-y-6 md:inset-x-10 lg:inset-y-10 lg:inset-x-40 z-50 rounded-xl bg-bg overflow-hidden">
       <div class="lg:w-1/2 h-full hidden md:hidden lg:block">
-        <img src="src/assets/form side pic.webp" class="w-full h-full object-cover rounded-l-xl" alt="a side picture of a child studying" loading="lazy">
+        <img src="src/assets/form-side-pic.webp" class="w-full h-full object-cover rounded-l-xl" alt="a side picture of a child studying" loading="lazy">
       </div>
 
       <button type="button" id="closeFormButton" aria-label="Fermer le formulaire" class="absolute right-3 top-3 rounded-lg px-3 py-2 text-xl text-red-600">X</button>

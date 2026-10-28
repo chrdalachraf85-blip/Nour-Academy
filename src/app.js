@@ -1,7 +1,5 @@
 import "./style.css";
 
-
-
 const courses = [
   {
     id: 1,
@@ -269,6 +267,7 @@ courseGrid.addEventListener("click", event => {
 
   cart.push(selectedCourse);
   renderCart();
+  filterCourses();
 });
 
 function renderCart() {
@@ -312,12 +311,7 @@ function renderCart() {
   }
 
   cartTotal.textContent = `${total} MAD`;
-
-  if (cart.length === 0) {
-    checkoutButton.disabled = true;
-  } else {
-    checkoutButton.disabled = false;
-  }
+  checkoutButton.disabled = cart.length === 0;
 }
 
 cartItems.addEventListener("click", event => {
@@ -326,23 +320,11 @@ cartItems.addEventListener("click", event => {
   if (!button) return;
 
   const courseId = Number(button.dataset.removeId);
+
   cart = cart.filter(course => course.id !== courseId);
 
-  const courseButton = courseGrid.querySelector(
-    `[data-course-id="${courseId}"]`
-  );
-
-  if (courseButton) {
-    const course = courses.find(course => course.id === courseId);
-
-    if (course.places === 0) {
-      courseButton.textContent = "Complet";
-    } else {
-      courseButton.textContent = "Ajouter";
-    }
-  }
-
   renderCart();
+  filterCourses();
 });
 
 const form = document.querySelector("#form");
@@ -353,48 +335,112 @@ checkoutButton.addEventListener("click", () => {
   if (cart.length === 0) return;
 
   form.innerHTML = `
-  <div id="formOverlay"
-     class="fixed inset-0 bg-black/50 z-40">
-</div>
-    <div class="flex fixed inset-2 sm:inset-4 md:inset-y-6 md:inset-x-10 lg:inset-y-10 lg:inset-x-40 z-50 rounded-xl bg-bg overflow-hidden">
+    <div id="formOverlay" class="fixed inset-0 z-40 bg-black/50"></div>
+
+    <div id="registrationModal" class="flex fixed inset-2 sm:inset-4 md:inset-y-6 md:inset-x-10 lg:inset-y-10 lg:inset-x-40 z-50 rounded-xl bg-bg overflow-hidden">
+
       <div class="lg:w-1/2 h-full hidden md:hidden lg:block">
-        <img src="src/assets/form-side-pic.webp" class="w-full h-full object-cover rounded-l-xl" alt="a side picture of a child studying" loading="lazy">
+        <img
+          src="src/assets/form-side-pic.webp"
+          class="w-full h-full object-cover rounded-l-xl"
+          alt="a side picture of a child studying"
+          loading="lazy"
+        >
       </div>
 
-      <button type="button" id="closeFormButton" aria-label="Fermer le formulaire" class="absolute right-3 top-3 rounded-lg px-3 py-2 text-xl text-red-600">X</button>
+      <button
+        type="button"
+        id="closeFormButton"
+        aria-label="Fermer le formulaire"
+        class="absolute right-3 top-3 rounded-lg px-3 py-2 text-xl text-red-600"
+      >
+        X
+      </button>
 
       <div class="lg:w-1/2 w-full p-6 overflow-auto">
-        <form  class="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full" action="" method="POST">
-          <legend class="w-full text-center text-[2rem] font-bold text-primary col-span-full">Registration</legend>
+        <form id="registrationForm" class="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
 
-          <p class="font-extrabold bg-accent rounded-2xl text-center col-span-full">Informations du parent</p>
+          <legend class="w-full text-center text-[2rem] font-bold text-primary col-span-full">
+            Registration
+          </legend>
+
+          <p class="font-extrabold bg-accent rounded-2xl text-center col-span-full">
+            Informations du parent
+          </p>
 
           <div>
-            <label for="name" class="text-center text-secondary">Nom complet du parent <span class="text-red-600">*</span></label>
-            <input type="text" id="name" required name="parent-name" class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover" placeholder="Nom complete">
+            <label for="name" class="text-center text-secondary">
+              Nom complet du parent <span class="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              required
+              name="parent-name"
+              class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover"
+              placeholder="Nom complet"
+            >
           </div>
 
           <div>
-            <label for="number" class="text-center text-secondary">Numéro de téléphone <span class="text-red-600">*</span></label>
-            <input type="tel" id="number" required name="parent-number" class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover" placeholder="+212 6 12 34 56 78">
-            <p id="phoneError" class="hidden text-sm text-red-600 mt-1">Veuillez entrer un numéro marocain valide.</p>
+            <label for="number" class="text-center text-secondary">
+              Numéro de téléphone <span class="text-red-600">*</span>
+            </label>
+            <input
+              type="tel"
+              id="number"
+              required
+              name="parent-number"
+              class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover"
+              placeholder="+212 6 12 34 56 78"
+            >
+            <p id="phoneError" class="hidden text-sm text-red-600 mt-1">
+              Veuillez entrer un numéro marocain valide.
+            </p>
           </div>
 
           <div class="col-span-full">
-            <label for="email" class="text-center text-secondary">Adresse email <span class="text-red-600">*</span></label>
-            <input type="email" id="email" required name="parent-email" class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover" placeholder="exemple@email.com">
+            <label for="email" class="text-center text-secondary">
+              Adresse email <span class="text-red-600">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              required
+              name="parent-email"
+              class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover"
+              placeholder="exemple@email.com"
+            >
           </div>
 
-          <p class="font-extrabold bg-accent rounded-2xl text-center col-span-full">Renseignement de l'élève</p>
+          <p class="font-extrabold bg-accent rounded-2xl text-center col-span-full">
+            Renseignement de l'élève
+          </p>
 
           <div>
-            <label for="namekid" class="text-center text-secondary">Nom d'élève <span class="text-red-600">*</span></label>
-            <input type="text" id="namekid" required name="kid-name" class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover" placeholder="Nom complete">
+            <label for="namekid" class="text-center text-secondary">
+              Nom de l'élève <span class="text-red-600">*</span>
+            </label>
+            <input
+              type="text"
+              id="namekid"
+              required
+              name="kid-name"
+              class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover"
+              placeholder="Nom complet"
+            >
           </div>
 
           <div>
-            <label for="level" class="text-center text-secondary">Niveau scolaire de l'élève <span class="text-red-600">*</span></label>
-            <select name="kid-level" id="level" required class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover">
+            <label for="level" class="text-center text-secondary">
+              Niveau scolaire de l'élève <span class="text-red-600">*</span>
+            </label>
+            <select
+              name="kid-level"
+              id="level"
+              required
+              class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover"
+            >
               <option value="">Choisir le niveau</option>
               <option value="Primaire">Primaire</option>
               <option value="Collège">Collège</option>
@@ -404,52 +450,87 @@ checkoutButton.addEventListener("click", () => {
             </select>
           </div>
 
-          <p class="font-extrabold bg-accent rounded-2xl text-center col-span-full">Sécurité du compte</p>
+          <p class="font-extrabold bg-accent rounded-2xl text-center col-span-full">
+            Sécurité du compte
+          </p>
 
           <div>
-            <label for="password" class="text-center text-secondary">Mot de passe <span class="text-red-600">*</span></label>
-            <input type="password" name="form-security" minlength="8" required id="password" class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover">
-            <p id="passwordError" class="hidden text-sm text-red-600 mt-1">Au moins 8 caractères, une majuscule et un symbole.</p>
+            <label for="password" class="text-center text-secondary">
+              Mot de passe <span class="text-red-600">*</span>
+            </label>
+            <input
+              type="password"
+              name="form-security"
+              minlength="8"
+              required
+              id="password"
+              class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover"
+            >
+            <p id="passwordError" class="hidden text-sm text-red-600 mt-1">
+              Au moins 8 caractères, une majuscule et un symbole.
+            </p>
           </div>
 
           <div>
-            <label for="passwordcheck" class="text-center text-secondary">Confirmer le mot de passe <span class="text-red-600">*</span></label>
-            <input type="password" name="form-security-check" minlength="8" required id="passwordcheck" class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover">
-            <p id="passwordCheckError" class="hidden text-sm text-red-600 mt-1">Les deux mots de passe ne correspondent pas.</p>
+            <label for="passwordcheck" class="text-center text-secondary">
+              Confirmer le mot de passe <span class="text-red-600">*</span>
+            </label>
+            <input
+              type="password"
+              name="form-security-check"
+              minlength="8"
+              required
+              id="passwordcheck"
+              class="border-2 rounded-xl p-1 border-border w-full focus:border-primary-hover focus:outline-1 focus:outline-primary-hover"
+            >
+            <p id="passwordCheckError" class="hidden text-sm text-red-600 mt-1">
+              Les deux mots de passe ne correspondent pas.
+            </p>
           </div>
 
           <div class="col-span-full">
             <label for="acceptTerms" class="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" id="acceptTerms" required class="h-5 w-5 shrink-0 accent-primary cursor-pointer">
+              <input
+                type="checkbox"
+                id="acceptTerms"
+                required
+                class="h-5 w-5 shrink-0 accent-primary cursor-pointer"
+              >
               <span>J'accepte les conditions d'utilisation.</span>
             </label>
-
             <p id="termsError" class="hidden text-sm text-red-600 mt-1">
               Vous devez accepter les conditions d'utilisation.
             </p>
           </div>
 
           <div class="col-span-full mt-3 flex items-center justify-end gap-2">
-            <button type="button" id="cancelForm" class="shrink-0 rounded-lg border border-border px-3 py-2 text-xs md:text-sm">Annuler</button>
-            <button type="submit" class="shrink-0 rounded-lg bg-primary px-3 py-2 text-xs sm:text-sm font-bold text-white">Envoyer</button>
+            <button
+              type="button"
+              id="cancelForm"
+              class="shrink-0 rounded-lg border border-border px-3 py-2 text-xs md:text-sm"
+            >
+              Annuler
+            </button>
+
+            <button
+              type="submit"
+              class="shrink-0 rounded-lg bg-primary px-3 py-2 text-xs sm:text-sm font-bold text-white"
+            >
+              Envoyer
+            </button>
           </div>
+
         </form>
       </div>
     </div>
   `;
 
+  const registrationModal = form.querySelector("#registrationModal");
+  const formOverlay = form.querySelector("#formOverlay");
   const closeFormButton = form.querySelector("#closeFormButton");
   const cancelForm = form.querySelector("#cancelForm");
+  const registrationForm = form.querySelector("#registrationForm");
 
-  cancelForm.addEventListener("click", () => {
-    form.innerHTML = "";
-  });
-
-  closeFormButton.addEventListener("click", () => {
-    form.innerHTML = "";
-  });
-
-  const registrationForm = form.querySelector("form");
   const phoneInput = registrationForm.querySelector("#number");
   const passwordInput = registrationForm.querySelector("#password");
   const passwordCheckInput = registrationForm.querySelector("#passwordcheck");
@@ -476,18 +557,27 @@ checkoutButton.addEventListener("click", () => {
     }
   });
 
-  registrationForm.addEventListener("submit", (event) => {
+  function closeRegistrationForm() {
+    form.innerHTML = "";
+  }
+
+  cancelForm.addEventListener("click", closeRegistrationForm);
+  closeFormButton.addEventListener("click", closeRegistrationForm);
+  formOverlay.addEventListener("click", closeRegistrationForm);
+
+  registrationForm.addEventListener("submit", event => {
     event.preventDefault();
 
-    const checknumber = phoneInput.value.split("")
-    let result = ""
-    for(let character of checknumber){
-      if(character !== " "){
-        result += character
+    const checknumber = phoneInput.value.split("");
+    let result = "";
+
+    for (let character of checknumber) {
+      if (character !== " ") {
+        result += character;
       }
     }
-    
-    const moroccanPhonePattern = /^(?:\+212|0)[5-7]\d{8}$/;
+
+    const moroccanPhonePattern = /^(?:\+212|0)[6-7]\d{8}$/;
     const phoneIsValid = moroccanPhonePattern.test(result);
 
     if (phoneIsValid) {
@@ -495,7 +585,7 @@ checkoutButton.addEventListener("click", () => {
     } else {
       phoneError.classList.remove("hidden");
       phoneInput.focus();
-      return
+      return;
     }
 
     const passwordIsValid = passwordPattern.test(passwordInput.value);
@@ -521,23 +611,176 @@ checkoutButton.addEventListener("click", () => {
       return;
     }
 
-    
+    const selectedCourses = cart.map(course => ({
+      id: course.id,
+      title: course.title,
+      subject: course.subject,
+      level: course.level,
+      schedule: course.schedule,
+      price: course.price
+    }));
 
-    cart = [];
-    renderCart();
+    let total = 0;
 
-    form.innerHTML = `
-      <div class="fixed inset-4 z-50 flex items-center justify-center rounded-xl bg-bg p-6 text-center shadow-xl">
-        <div>
-          <p class="mb-3 text-xl font-bold text-primary">Vérification terminée !</p>
-          <p class="mb-4">Les informations sont valides.</p>
-          <button type="button" id="closeSuccessMessage" class="rounded-xl bg-primary px-4 py-2 text-white">Fermer</button>
-        </div>
+    for (const course of selectedCourses) {
+      total += course.price;
+    }
+    let randomNumber = "";
+
+    for (let i = 0; i < 10; i++) {
+    randomNumber += Math.floor(Math.random() * 10)
+    }
+    const registration = {
+      id: `NA ${randomNumber}`,
+      parentName: registrationForm.querySelector("#name").value.trim(),
+      phone: result,
+      email: registrationForm.querySelector("#email").value.trim(),
+      studentName: registrationForm.querySelector("#namekid").value.trim(),
+      studentLevel: registrationForm.querySelector("#level").value,
+      courses: selectedCourses,
+      total: total,
+      createdAt: new Date().toISOString(),
+      status: "Nouvelle"
+    };
+
+    const selectedCoursesHTML = selectedCourses.map(course => `
+      <div class="border border-border rounded-xl p-3">
+        <h3 class="font-bold">${course.title}</h3>
+        <p>${course.subject} · ${course.level}</p>
+        <p>${course.schedule}</p>
+        <p>${course.price} MAD / mois</p>
       </div>
+    `).join("");
+
+    const reviewPage = document.createElement("div");
+
+    reviewPage.id = "registrationReview";
+    reviewPage.className = "fixed inset-0 z-[100] overflow-y-auto bg-black/50 p-4";
+
+    reviewPage.innerHTML = `
+      <section class="mx-auto my-4 max-w-3xl rounded-xl bg-bg p-5">
+
+        <h2 class="mb-4 text-center text-2xl font-bold text-primary">
+          Vérification de votre inscription
+        </h2>
+
+        <h3 class="mt-4 font-bold">Informations du parent</h3>
+        <p>Nom : ${registration.parentName}</p>
+        <p>Téléphone : ${registration.phone}</p>
+        <p>Email : ${registration.email}</p>
+
+        <h3 class="mt-4 font-bold">Informations de l'élève</h3>
+        <p>Nom de l'élève : ${registration.studentName}</p>
+        <p>Niveau scolaire : ${registration.studentLevel}</p>
+
+        <h3 class="my-3 font-bold">
+          Cours sélectionnés (${selectedCourses.length})
+        </h3>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          ${selectedCoursesHTML}
+        </div>
+
+        <p class="mt-4 font-bold">
+          Total mensuel : ${total} MAD / mois
+        </p>
+
+        <p class="mt-5 font-bold">
+          Êtes-vous sûr de vouloir confirmer votre inscription ?
+        </p>
+
+        <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+          <button
+            type="button"
+            id="editRegistration"
+            class="rounded-lg border border-border px-4 py-2"
+          >
+            Modifier mes informations
+          </button>
+
+          <button
+            type="button"
+            id="confirmRegistration"
+            class="rounded-lg bg-primary px-4 py-2 font-bold text-white"
+          >
+            Confirmer l'inscription
+          </button>
+        </div>
+
+      </section>
     `;
 
-    document.querySelector("#closeSuccessMessage").addEventListener("click", () => {
+    registrationModal.classList.add("hidden");
+    formOverlay.classList.add("hidden");
+    closeFormButton.classList.add("hidden");
+
+    form.appendChild(reviewPage);
+
+    reviewPage.querySelector("#editRegistration").addEventListener("click", () => {
+      reviewPage.remove();
+      registrationModal.classList.remove("hidden");
+      formOverlay.classList.remove("hidden");
+      closeFormButton.classList.remove("hidden");
+    });
+
+    reviewPage.querySelector("#confirmRegistration").addEventListener("click", () => {
+      const savedRegistrations = JSON.parse(
+  localStorage.getItem("nourAcademyRegistrations") || "[]"
+);
+
+
+savedRegistrations.push(registration);
+
+localStorage.setItem(
+  "nourAcademyRegistrations",
+  JSON.stringify(savedRegistrations)
+);
       form.innerHTML = "";
+
+      cart = [];
+      renderCart();
+      filterCourses();
+
+      const successPage = document.createElement("div");
+
+      successPage.className =
+        "fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4";
+
+      successPage.innerHTML = `
+        <section class="w-full max-w-lg rounded-xl bg-bg p-6 text-center">
+
+          <h2 class="text-2xl font-bold text-primary">
+            Inscription confirmée !
+          </h2>
+
+          <p class="mt-3">
+            Votre dossier a été enregistré avec succès.
+          </p>
+
+          <p class="mt-4 break-all font-semibold">
+            Numéro de dossier : ${registration.id}
+          </p>
+
+          <p class="mt-3 text-sm">
+            Votre dossier est enregistré dans ce navigateur uniquement.
+          </p>
+
+          <button
+            type="button"
+            id="finishRegistration"
+            class="mt-6 rounded-xl bg-primary px-4 py-2 text-white"
+          >
+            Retour au catalogue
+          </button>
+
+        </section>
+      `;
+
+      document.body.appendChild(successPage);
+
+      successPage.querySelector("#finishRegistration").addEventListener("click", () => {
+        successPage.remove();
+      });
     });
   });
 });
